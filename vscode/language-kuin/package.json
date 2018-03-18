@@ -1,0 +1,28 @@
+{
+    "name": "language-kuin",
+    "displayName": "language-kuin",
+    "description": "Language support for Kuin",
+    "version": "0.0.1",
+    "repository": "https://github.com/contrabash/kuin-highlight",
+    "license": "MIT",
+    "publisher": "contrabash",
+    "engines": {
+        "vscode": "^1.21.0"
+    },
+    "categories": [
+        "Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "kuin",
+            "aliases": ["kuin", "kuin"],
+            "extensions": [".kn"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "kuin",
+            "scopeName": "source.kuin",
+            "path": "./syntaxes/kuin.tmLanguage.json"
+        }]
+    }
+}

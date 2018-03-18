@@ -1,0 +1,344 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "kuin",
+	"patterns": [
+		{ "include": "#constants" },
+	  { "include": "#type" },
+	  { "include": "#array" },
+	  { "include": "#operators" },
+	  { "include": "#statements" },
+	  { "include": "#blocks" },
+	  { "include": "#global_scope" },
+	  { "include": "#comments" }
+	],
+	"repository": {
+		"type": {
+	    "patterns": [
+	      {
+	        "match": "\\b(int|float|char|bool|bit8|bit16|bit32|bit64)\\b",
+	        "name": "storage.type.kuin"
+	      },
+	      { "include": "#data_structure_type" }
+	    ]
+		},
+		"data_structure_type": {
+	    "match": "\\b(list|stack|queue|dict|func)\\b\\s*?(?=<)",
+	    "captures": {
+	      "1": { "name": "storage.type.kuin" }
+			}
+		},
+	  "constants": {
+	    "patterns": [
+	      { "include": "#numeric" },
+	      { "include": "#lang"},
+	      { "include": "#string" }
+	    ]
+		},
+		"numeric": {
+	    "patterns": [
+	      {
+	        "match": "\\b2#[0-1]+",
+	        "name": "constant.numeric.integer.binary.kuin"
+	      },
+	      {
+	        "match": "\\b8#[0-7]+",
+	        "name": "constant.numeric.integer.octal.kuin"
+	      },
+	      {
+	        "match": "\\b16#\\h+",
+	        "name": "constant.numeric.integer.hexadecimal.kuin"
+	      },
+	      {
+	        "match": "\\b\\d+\\.\\d+(e(\\+|-)\\d+)?",
+	        "name": "constant.numeric.float.kuin"
+	      },
+	      {
+	        "match": "\\b\\d+",
+	        "name": "constant.numeric.integer.decimal.kuin"
+	      }
+	    ]
+		},
+		"lang": {
+	    "patterns": [
+	      {
+	        "match": "\\b(null|true|false|inf)\\b",
+	        "name": "constant.language.kuin"
+	      }
+	    ]
+		},
+		"string": {
+	    "patterns": [
+	      { "include": "#single_quoted" },
+	      { "include": "#double_quoted" }
+	    ]
+		},
+		"single_quoted": {
+	    "match": "(')(.*?)(?<!\\\\)(')",
+	    "captures": {
+	      "1": { "name": "punctuation.definition.string.begin.kuin" },
+	      "2": {
+	        "patterns": [
+	          { "include": "#escaped_char"}
+	        ]
+				},
+	      "3": { "name": "punctuation.definition.string.end.kuin" }
+			},
+	    "name": "string.quoted.single.kuin",
+	    "patterns": [
+	      { "include": "#escaped_char"}
+	    ]
+		},
+		"double_quoted": {
+	    "match": "(\")(.*?)(?<!\\\\)(\")",
+	    "captures": {
+	      "1": { "name": "punctuation.definition.string.begin.kuin" },
+	      "2": {
+					"patterns": [
+	          { "include": "#escaped_char"}
+	        ]
+				},
+	      "3": { "name": "punctuation.definition.string.end.kuin"}
+			},
+	    "name": "string.quoted.double.kuin"
+		},
+		"escaped_char": {
+	    "patterns": [
+	      {
+	        "match": "\\\\x\\h{2}",
+	        "name": "constant.character.escape.hex.kuin"
+	      },
+	      {
+	        "match": "\\\\[0-7]{3}",
+	        "name": "constant.character.escape.octal.kuin"
+	      },
+	      {
+	        "match": "\\\\\\\\",
+	        "name": "constant.character.escape.backlash.kuin"
+	      },
+	      {
+	        "match": "\\\\\\\"",
+	        "name": "constant.character.escape.double-quote.kuin"
+	      },
+	      {
+	        "match": "\\\\\\'",
+	        "name": "constant.character.escape.single-quote.kuin"
+	      },
+	      {
+	        "match": "\\\\n",
+	        "name": "constant.character.escape.linefeed.kuin"
+	      },
+	      {
+	        "match": "\\\\t",
+	        "name": "constant.character.escape.tab.kuin"
+	      },
+	      {
+	        "match": "\\\\u\\h{4}",
+	        "name": "constant.character.escape.unicode.32-bit-hex.kuin"
+	      },
+	      {
+	        "match": "\\\\\\{.*?\\}",
+	        "name": "constant.character.escape.kuin"
+	      }
+	    ]
+		},
+		"array": {
+	    "begin": "\\[",
+	    "beginCaptures": {
+	      "0": { "name": "punctuation.definition.begin.bracket.square.kuin" }
+			},
+	    "end": "\\]",
+	    "endCaptures": {
+	      "0": { "name": "punctuation.definition.end.bracket.square.kuin" }
+			},
+	    "patterns": [
+	      { "include": "$self" }
+	    ]
+		},
+		"operators": {
+	    "patterns": [
+	      {
+	        "match": "&|\\||\\!",
+	        "name": "keyword.operator.logical.kuin"
+	      },
+	      {
+	        "match": "<|>|<\\=|>\\=|\\=|<>",
+	        "name": "keyword.operator.comparison.kuin"
+	      },
+	      {
+	        "match": "\\+|\\-|\\*|/|%",
+	        "name": "keyword.operator.arithmetic.kuin"
+	      },
+	      {
+	        "match": "\\:\\:",
+	        "name": "keyword.operator.assignment.kuin"
+	      },
+	      {
+	        "match": "\\:\\+|\\:-|\\:\\*|\\:/|\\:%|\\:\\^|\\:~",
+	        "name": "keyword.operator.assignment.augmented.kuin"
+	      },
+	      {
+	        "match": "%|\\$|\\#|(?<!\\:)\\:(?!\\:)",
+	        "name": "keyword.control.kuin"
+	      }
+	    ]
+		},
+		"statements": {
+	    "patterns": [
+	      {
+	        "match": "\\b(alias|assert|break|dbg|do|include|ret|skip|throw|to)\\b",
+	        "name": "keyword.control.kuin"
+	      },
+	      { "include": "#variable" }
+	    ]
+		},
+	  "variable": {
+	    "match": "\\b(var|const)\\b",
+	    "name": "storage.type.var.kuin"
+		},
+		"blocks": {
+	    "patterns": [
+	      {
+	        "match": "\\b(block|end|try|catch|finally)\\b",
+	        "name": "keyword.control.kuin"
+	      },
+	      {
+	        "match": "\\b(if|elif|else)\\b",
+	        "name": "keyword.control.conditional.kuin"
+	      },
+	      {
+	        "match": "\\b(for|while)\\b",
+	        "name": "keyword.control.repeat.kuin"
+	      },
+	      { "include": "#switch" },
+	      { "include": "#function" },
+	      { "include": "#enum" },
+	      { "include": "#class" }
+	    ]
+		},
+		"switch": {
+	    "patterns": [
+	      {
+	        "match": "\\bswitch\\b",
+	        "name": "keyword.control.switch.kuin"
+	      },
+	      {
+	        "match": "\\bcase\\b",
+	        "name": "keyword.control.case.kuin"
+	      },
+	      {
+	        "match": "\\bdefault\\b",
+	        "name": "keyword.control.default.kuin"
+	      }
+	    ]
+		},
+		"function": {
+	    "patterns": [
+	      { "include": "#function_block" },
+	      {
+	        "match": "\\bfunc\\b",
+	        "name": "storage.type.function.kuin"
+	      },
+	      { "include": "#builtin_functions" }
+	    ]
+		},
+		"function_block": {
+	    "begin": "^\\s*(\\+?\\s*\\*?\\s*\\*?\\b)?(func)\\s+(\\w+)\\s*(\\()",
+	    "beginCaptures": {
+	      "1": { "name": "storage.modifier.kuin" },
+	      "2": { "name": "storage.type.function.kuin" },
+	      "3": { "name": "entity.name.function.kuin" },
+	      "4": { "name": "punctuation.definition.parameters.begin.kuin" }
+			},
+	    "end": "(\\))",
+	    "endCaptures": {
+	      "1": { "name": "punctuation.definition.parameters.end.kuin" }
+			},
+	    "name": "meta.function.kuin",
+	    "contentName": "meta.function.parameters.kuin",
+	    "patterns": [
+	      {
+	        "match": "(?<=\\(|,).*?(?<!\\:)(\\:)(?!\\:).*?(&?)(.*?)(?=\\)|,)",
+	        "captures": {
+	          "1": { "name": "keyword.control.kuin" },
+	          "2": { "name": "storage.modifier.kuin" },
+	          "3": {
+	            "patterns": [
+	              { "include": "$self" }
+	            ]
+						}
+					}
+	      },
+	      {
+	        "match": ",",
+	        "name": "punctuation.separator.parameters.kuin"
+	      },
+	      { "include": "#comments" }
+	    ]
+		},
+		"builtin_functions": {
+	    "match": "\\b(abs|add|and|clamp|clampMax|clampMin|del|delNext|endian|exist|fill|find|findBin|findLast|findStr|findStrLast|findStrEx|forEach|get|getOffset|head|ins|join|lower|max|min|moveOffset|next|not|offset|or|peek|prev|repeat|replace|reverse|sar|shl|shr|shuffle|sign|sort|sortDesc|split|sub|tail|term|termOffset|toArray|toArrayKey|toArrayValue|toFloat|toInt|toStr|toStrFmt|trim|trimLeft|trimRight|upper|xor)\\b",
+	    "name": "support.function.builtin.kuin"
+		},
+	  "enum": {
+	    "match": "\\benum\\b",
+	    "name": "storage.type.kuin"
+		},
+	  "class": {
+	    "patterns": [
+	      {
+	        "match": "\\bclass\\b",
+	        "name": "storage.type.kuin"
+	      },
+	      {
+	        "match": "\\bme\\b",
+	        "name": "variable.language.kuin"
+	      },
+	      { "include": "#class_block" }
+	    ]
+		},
+		"class_block": {
+	    "begin": "^\\s*(class)\\s+(\\w+)\\s*(\\()",
+	    "beginCaptures": {
+	      "1": { "name": "storage.type.class.kuin" },
+	      "2": { "name": "entity.name.type.kuin" },
+	      "3": { "name": "punctuation.definition.inheritance.begin.kuin" }
+			},
+	    "end": "\\)",
+	    "endCaptures": {
+	      "0": { "name": "punctuation.definition.inheritance.end.kuin" }
+			},
+	    "contentName": "meta.class.inheritance.kuin",
+	    "patterns": [
+	      {
+	        "match": "(\\w|\\@)+",
+	        "name": "entity.other.inherited-class.kuin"
+	      },
+	      { "include": "#comments" }
+	    ]
+		},
+		"global_scope": {
+	    "match": "(\\b\\w+)?\\@\\w+\\b",
+	    "name": "storage.modifier.global.kuin"
+		},
+	  "comments": {
+	    "patterns": [
+	      { "include": "#line_comments" },
+	      { "include": "#block_comments" }
+	    ]
+		},
+	  "line_comments": {
+	    "begin": ";",
+	    "beginCaptures": {
+	      "0": { "name": "punctuation.definition.comment.kuin" }
+			},
+	    "end": "(?=\\n)",
+	    "name": "comment.line.character.kuin"
+		},
+	  "block_comments": {
+	    "begin": "(\\{)",
+	    "end": "(\\})",
+	    "name": "comment.block.kuin"
+		}
+	},
+	"scopeName": "source.kuin"
+}
